@@ -1,1 +1,0 @@
-# SQL-Assignment-Session-8

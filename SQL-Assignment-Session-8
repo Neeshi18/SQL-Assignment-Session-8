@@ -1,0 +1,66 @@
+Use food_delivery_db;
+ALTER TABLE orders ADD user_id INT;
+UPDATE orders SET user_id = 101 WHERE order_id = 1;
+UPDATE orders SET user_id = 101 WHERE order_id = 2;
+UPDATE orders SET user_id = 102 WHERE order_id = 3;
+UPDATE orders SET user_id = 102 WHERE order_id = 4;
+UPDATE orders SET user_id = 105 WHERE order_id = 5;
+ALTER TABLE orders ADD product VARCHAR(50);
+UPDATE orders
+SET product = 'Pizza'
+WHERE order_id = 1;
+
+UPDATE orders
+SET product = 'Burger'
+WHERE order_id = 2;
+
+UPDATE orders
+SET product = 'Pasta'
+WHERE order_id = 3;
+
+UPDATE orders
+SET product = 'Coffee'
+WHERE order_id = 4;
+
+UPDATE orders
+SET product = 'Sandwich'
+WHERE order_id = 5;
+SELECT u.user_name, o.product FROM Users u INNER JOIN Orders o ON u.user_id = o.user_id;
+SELECT u.user_name, o.product FROM Users u LEFT JOIN Orders o ON u.user_id = o.user_id;
+SELECT u.user_name, o.product FROM Users u RIGHT JOIN Orders o ON u.user_id = o.user_id;
+CREATE TABLE CustomerSegments (
+    segment_id INT PRIMARY KEY,
+    segment_name VARCHAR(50)
+);
+INSERT INTO CustomerSegments VALUES
+(1, 'Silver'),
+(2, 'Gold'),
+(3, 'Platinum');
+ALTER TABLE Users
+ADD segment_id INT;
+ALTER TABLE Users
+ADD CONSTRAINT fk_segment
+FOREIGN KEY (segment_id)
+REFERENCES CustomerSegments(segment_id);
+UPDATE Users
+SET segment_id = 1
+WHERE user_id = 101;
+
+UPDATE Users
+SET segment_id = 2
+WHERE user_id = 102;
+
+UPDATE Users
+SET segment_id = 3
+WHERE user_id = 103;
+
+UPDATE Users
+SET segment_id = 2
+WHERE user_id = 104;
+SELECT u.user_name, cs.segment_name, IFNULL(SUM(o.amount), 0) AS total_order_amount
+FROM Users u
+JOIN CustomerSegments cs
+ON u.segment_id = cs.segment_id
+LEFT JOIN Orders o
+ON u.user_id = o.user_id
+GROUP BY u.user_id, u.user_name, cs.segment_name;
